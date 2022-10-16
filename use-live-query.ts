@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const useLiveQuery = () => {
-    return 'useLiveQuery returns';
+    return 'local useLiveQuery returns';
 }
 
 export default useLiveQuery;

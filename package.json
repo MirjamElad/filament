@@ -1,0 +1,27 @@
+{
+  "name": "mono-filament",
+  "version": "0.0.1",
+  "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MirjamElad/filament.git"
+  },
+  "keywords": [
+    "React State Management",
+    "Vanilla JavaScript",
+    "Vanilla Typescript"
+  ],
+  "author": "Mirjam Elad",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MirjamElad/filament/issues"
+  },
+  "homepage": "https://github.com/MirjamElad/filament#readme",
+  "peerDependencies": {
+    "react": "^17.0.0"
+  }
+}

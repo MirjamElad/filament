@@ -1,4 +1,4 @@
 const triggerAction = () => {
-    return "triggerAction returns";
+    return "local triggerAction returns";
 }
 export default triggerAction;
