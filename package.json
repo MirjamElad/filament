@@ -1,6 +1,6 @@
 {
   "name": "mono-filament",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
   "main": "index.js",
   "scripts": {
@@ -21,8 +21,10 @@
     "url": "https://github.com/MirjamElad/filament/issues"
   },
   "homepage": "https://github.com/MirjamElad/filament#readme",
-  "peerDependencies": {
-    "react": "^18.2.0",
+  "dependencies": {
     "nanoid": "^4.0.0" 
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
   }
 }
