@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/MirjamElad/filament.git"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -28,9 +28,7 @@
     "url": "https://github.com/MirjamElad/filament/issues"
   },
   "homepage": "https://github.com/MirjamElad/filament#readme",
-  "dependencies": {
-    "nanoid": "^4.0.0" 
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^18.2.0"
   }

@@ -11,8 +11,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLiveQuery = exports.triggerAction = exports.registerReadInstance = exports.loadRules = exports.addRule = void 0;
 var react_1 = require("react");
-var nanoid_1 = require("nanoid");
-var cpt = 1;
+var fun_ID_Cpt = 1;
+var CMP_ID_Cpt = 1;
 var actionRules = {};
 var readKey2writeKey = {};
 var trackFun = function (fn) {
@@ -22,9 +22,8 @@ var trackFun = function (fn) {
         }
         throw new Error("The Function ".concat(fn, " uid must have been number and not: ").concat(typeof fn.uid));
     }
-    console.log("new cpt:", cpt);
-    fn = Object.assign(fn, { uid: ++cpt });
-    return cpt;
+    fn = Object.assign(fn, { uid: ++fun_ID_Cpt });
+    return fun_ID_Cpt;
 };
 var addRule = function (writeFn, readFn, guardFn) {
     var _a;
@@ -87,9 +86,8 @@ var triggerAction = function (writeFn, paramsObj) {
 };
 exports.triggerAction = triggerAction;
 var useLiveQuery = function (readFn, paramsObj) {
-    //debugger;
     var _a = (0, react_1.useState)(0), resultVersion = _a[0], setResultVersion = _a[1];
-    var key = (0, react_1.useRef)((0, nanoid_1.nanoid)());
+    var key = (0, react_1.useRef)("".concat(++CMP_ID_Cpt));
     var paramsArr = Object.keys(paramsObj).map(function (k) { return paramsObj[k]; });
     (0, react_1.useEffect)(function () {
         (0, exports.registerReadInstance)(readFn.uid || -1, {

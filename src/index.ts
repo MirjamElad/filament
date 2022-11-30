@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { nanoid } from "nanoid";
 
 export interface TrackedFunction extends Function {
   uid?: number;
@@ -27,7 +26,8 @@ type ActionRules = {
   };
 };
 
-let cpt = 1;
+let fun_ID_Cpt = 1;
+let CMP_ID_Cpt = 1;
 const actionRules: ActionRules = {};
 const readKey2writeKey: { [readKey: number]: number[] } = {};
 
@@ -42,9 +42,8 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
       `The Function ${fn} uid must have been number and not: ${typeof fn.uid}`
     );
   }
-  console.log("new cpt:", cpt);
-  fn = Object.assign(fn, { uid: ++cpt });
-  return cpt;
+  fn = Object.assign(fn, { uid: ++fun_ID_Cpt });
+  return fun_ID_Cpt;
 };
 
 export const addRule = (
@@ -126,9 +125,8 @@ export const useLiveQuery = (
   readFn: Function | TrackedFunction,
   paramsObj: ParamsType
 ) => {
-  //debugger;
   const [resultVersion, setResultVersion] = useState(0);
-  const key = useRef(nanoid());
+  const key = useRef(`${++CMP_ID_Cpt}`);
   const paramsArr = Object.keys(paramsObj).map((k) => paramsObj[k]);
   useEffect(() => {
     registerReadInstance((readFn as TrackedFunction).uid || -1, {

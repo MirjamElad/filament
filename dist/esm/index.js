@@ -8,8 +8,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 import { useState, useEffect, useMemo, useRef } from "react";
-import { nanoid } from "nanoid";
-var cpt = 1;
+var fun_ID_Cpt = 1;
+var CMP_ID_Cpt = 1;
 var actionRules = {};
 var readKey2writeKey = {};
 var trackFun = function (fn) {
@@ -19,9 +19,8 @@ var trackFun = function (fn) {
         }
         throw new Error("The Function ".concat(fn, " uid must have been number and not: ").concat(typeof fn.uid));
     }
-    console.log("new cpt:", cpt);
-    fn = Object.assign(fn, { uid: ++cpt });
-    return cpt;
+    fn = Object.assign(fn, { uid: ++fun_ID_Cpt });
+    return fun_ID_Cpt;
 };
 export var addRule = function (writeFn, readFn, guardFn) {
     var _a;
@@ -80,9 +79,8 @@ export var triggerAction = function (writeFn, paramsObj) {
     }
 };
 export var useLiveQuery = function (readFn, paramsObj) {
-    //debugger;
     var _a = useState(0), resultVersion = _a[0], setResultVersion = _a[1];
-    var key = useRef(nanoid());
+    var key = useRef("".concat(++CMP_ID_Cpt));
     var paramsArr = Object.keys(paramsObj).map(function (k) { return paramsObj[k]; });
     useEffect(function () {
         registerReadInstance(readFn.uid || -1, {

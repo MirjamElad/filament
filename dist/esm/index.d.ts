@@ -1,10 +1,10 @@
 export interface TrackedFunction extends Function {
     uid?: number;
 }
-export declare type ParamsType = {
+export type ParamsType = {
     [key: string]: any;
 };
-declare type ReaderInstance = {
+type ReaderInstance = {
     instanceKey: string;
     readTrigger: (() => void) | undefined;
     paramsObj: ParamsType;
