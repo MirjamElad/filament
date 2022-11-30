@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/MirjamElad/filament.git"
   },
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
