@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { nanoid } from 'nanoid';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { nanoid } from "nanoid";
 
 export interface TrackedFunction extends Function {
   uid?: number;
@@ -34,15 +34,15 @@ const readKey2writeKey: { [readKey: number]: number[] } = {};
 const trackFun: (fn: Function | TrackedFunction) => number = (
   fn: Function | TrackedFunction
 ) => {
-  if ('uid' in fn) {
-    if (typeof fn.uid === 'number') {
+  if ("uid" in fn) {
+    if (typeof fn.uid === "number") {
       return fn.uid;
     }
     throw new Error(
       `The Function ${fn} uid must have been number and not: ${typeof fn.uid}`
     );
   }
-  console.log('new cpt:', cpt);
+  console.log("new cpt:", cpt);
   fn = Object.assign(fn, { uid: ++cpt });
   return cpt;
 };

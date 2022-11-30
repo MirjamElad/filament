@@ -1,22 +1,29 @@
 {
   "name": "mono-filament",
-  "version": "0.0.3",
-  "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MirjamElad/filament.git"
   },
+  "version": "0.0.4",
+  "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf -rf dist/ && prettier --write src/ && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mirjam Elad",
+  "license": "MIT",
   "keywords": [
     "React State Management",
     "Vanilla JavaScript",
     "Vanilla Typescript"
   ],
-  "author": "Mirjam Elad",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MirjamElad/filament/issues"
   },
