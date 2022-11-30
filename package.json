@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/MirjamElad/filament.git"
   },
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Enabling proper usage of vanila javascript (plain old javascript) to manage state in React (and later other libraries)",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,7 +18,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mirjam Elad",
-  "license": "MIT",
+  "license": "Private",
   "keywords": [
     "React State Management",
     "Vanilla JavaScript",

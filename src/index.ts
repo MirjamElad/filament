@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { nanoid } from "nanoid";
 
 export interface TrackedFunction extends Function {
