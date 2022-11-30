@@ -18,7 +18,7 @@ type ActionRules = {
   [writeKey: number]: {
     [readKey: number]: {
       readersInstancesMap: { [instanceKey: string]: ReaderInstance };
-      guardFn?: (
+      skip?: (
         writeParamsObj: ParamsType,
         readParamsObj?: ParamsType
       ) => boolean | undefined;
@@ -49,9 +49,9 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
 export const addRule = (
   writeFn: Function | TrackedFunction,
   readFn: Function | TrackedFunction,
-  guardFn?: (
-    writeParamsObj: ParamsType,
-    readParamsObj?: ParamsType
+  skip?: (
+    writeParamsObj: any,
+    readParamsObj?: any
   ) => boolean | undefined
 ) => {
   const writeKey = trackFun(writeFn);
@@ -60,7 +60,7 @@ export const addRule = (
   actionRules[writeKey] = {
     [readKey]: {
       readersInstancesMap: {},
-      guardFn,
+      skip,
     },
   };
   readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
@@ -94,26 +94,25 @@ export const registerReadInstance = (
 };
 export const triggerAction = (
   writeFn: TrackedFunction,
-  paramsObj: ParamsType
+  writeParamsObj: ParamsType
 ) => {
-  writeFn(paramsObj);
+  writeFn(writeParamsObj);
   if (writeFn?.uid && writeFn.uid <= 0) {
-    console.log(`triggerAction run on an untracked Function`);
+    console.warn(`triggerAction run on an untracked Function`);
     return;
   }
-  console.log(`triggerAction writeFn.uid:`, writeFn.uid);
-  console.log(`triggerAction actionRules:`, actionRules);
   if (writeFn.uid && actionRules[writeFn.uid]) {
-    console.log(`triggerAction writeFn.uid:`, writeFn.uid);
     const readFnKeysList = Object.keys(actionRules[writeFn.uid]).map(Number);
     if (Array.isArray(readFnKeysList)) {
-      console.log(`triggerAction readFnKeysList:`, readFnKeysList);
       readFnKeysList.forEach((readKey: number) => {
         const actionRule = actionRules[writeFn.uid!][readKey];
         if (actionRule?.readersInstancesMap) {
           Object.keys(actionRule.readersInstancesMap).forEach(
             (instanceKey: string) => {
-              actionRule.readersInstancesMap[instanceKey]!.readTrigger!();
+              const readersInst = actionRule.readersInstancesMap[instanceKey];
+              if (readersInst?.readTrigger && !(actionRule.skip && actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
+                readersInst.readTrigger();
+              }
             }
           );
         }
