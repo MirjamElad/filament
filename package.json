@@ -30,6 +30,6 @@
   "homepage": "https://github.com/MirjamElad/filament#readme",
   "dependencies": {},
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^16.0.0"
   }
 }
