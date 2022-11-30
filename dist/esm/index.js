@@ -22,7 +22,7 @@ var trackFun = function (fn) {
     fn = Object.assign(fn, { uid: ++fun_ID_Cpt });
     return fun_ID_Cpt;
 };
-export var addRule = function (writeFn, readFn, guardFn) {
+export var addRule = function (writeFn, readFn, skip) {
     var _a;
     var writeKey = trackFun(writeFn);
     var readKey = trackFun(readFn);
@@ -30,7 +30,7 @@ export var addRule = function (writeFn, readFn, guardFn) {
     actionRules[writeKey] = (_a = {},
         _a[readKey] = {
             readersInstancesMap: {},
-            guardFn: guardFn,
+            skip: skip,
         },
         _a);
     readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
@@ -54,24 +54,25 @@ export var registerReadInstance = function (readKey, readerInstance) {
         }
     });
 };
-export var triggerAction = function (writeFn, paramsObj) {
-    writeFn(paramsObj);
+export var triggerAction = function (writeFn, writeParamsObj) {
+    writeFn(writeParamsObj);
     if ((writeFn === null || writeFn === void 0 ? void 0 : writeFn.uid) && writeFn.uid <= 0) {
-        console.log("triggerAction run on an untracked Function");
+        console.warn("triggerAction run on an untracked Function");
         return;
     }
-    console.log("triggerAction writeFn.uid:", writeFn.uid);
-    console.log("triggerAction actionRules:", actionRules);
     if (writeFn.uid && actionRules[writeFn.uid]) {
-        console.log("triggerAction writeFn.uid:", writeFn.uid);
         var readFnKeysList = Object.keys(actionRules[writeFn.uid]).map(Number);
         if (Array.isArray(readFnKeysList)) {
-            console.log("triggerAction readFnKeysList:", readFnKeysList);
             readFnKeysList.forEach(function (readKey) {
                 var actionRule = actionRules[writeFn.uid][readKey];
                 if (actionRule === null || actionRule === void 0 ? void 0 : actionRule.readersInstancesMap) {
                     Object.keys(actionRule.readersInstancesMap).forEach(function (instanceKey) {
-                        actionRule.readersInstancesMap[instanceKey].readTrigger();
+                        var readersInst = actionRule.readersInstancesMap[instanceKey];
+                        if ((readersInst === null || readersInst === void 0 ? void 0 : readersInst.readTrigger) &&
+                            !(actionRule.skip &&
+                                actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
+                            readersInst.readTrigger();
+                        }
                     });
                 }
             });

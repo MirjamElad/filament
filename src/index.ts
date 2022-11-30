@@ -49,10 +49,7 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
 export const addRule = (
   writeFn: Function | TrackedFunction,
   readFn: Function | TrackedFunction,
-  skip?: (
-    writeParamsObj: any,
-    readParamsObj?: any
-  ) => boolean | undefined
+  skip?: (writeParamsObj: any, readParamsObj?: any) => boolean | undefined
 ) => {
   const writeKey = trackFun(writeFn);
   const readKey = trackFun(readFn);
@@ -110,7 +107,13 @@ export const triggerAction = (
           Object.keys(actionRule.readersInstancesMap).forEach(
             (instanceKey: string) => {
               const readersInst = actionRule.readersInstancesMap[instanceKey];
-              if (readersInst?.readTrigger && !(actionRule.skip && actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
+              if (
+                readersInst?.readTrigger &&
+                !(
+                  actionRule.skip &&
+                  actionRule.skip(writeParamsObj, readersInst.paramsObj)
+                )
+              ) {
                 readersInst.readTrigger();
               }
             }
