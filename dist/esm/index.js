@@ -26,6 +26,7 @@ export var addRule = function (writeFn, readFn, skip) {
     var _a;
     var writeKey = trackFun(writeFn);
     var readKey = trackFun(readFn);
+    console.info("'addRule(".concat(writeKey, ", ").concat(writeKey, ")'"));
     actionRules[writeKey] = actionRules[writeKey] || {};
     actionRules[writeKey] = (_a = {},
         _a[readKey] = {
@@ -35,6 +36,7 @@ export var addRule = function (writeFn, readFn, skip) {
         _a);
     readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
     readKey2writeKey[readKey].push(writeKey);
+    console.info('readKey2writeKey["' + readKey + '"]');
 };
 export var loadRules = function (depList) { };
 export var registerReadInstance = function (readKey, readerInstance) {
@@ -99,5 +101,23 @@ export var useLiveQuery = function (readFn, paramsObj) {
     }, __spreadArray([readFn.uid], paramsArr, true));
     var data = useMemo(function () { return readFn(paramsObj); }, __spreadArray([resultVersion], paramsArr, true));
     return data;
+};
+export var asRead = function (kFn) {
+    return Object.keys(kFn).reduce(function (ret, k) {
+        var _a;
+        return (_a = {},
+            _a[k] = function (readParamsObj) { return useLiveQuery(kFn[k], readParamsObj); },
+            _a);
+    }, {});
+};
+export var asWrite = function (kFn) {
+    return Object.keys(kFn).reduce(function (ret, k) {
+        var _a;
+        return (_a = {},
+            _a[k] = function (writeParamsObj) {
+                return triggerAction(kFn[k], writeParamsObj);
+            },
+            _a);
+    }, {});
 };
 //# sourceMappingURL=index.js.map

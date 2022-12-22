@@ -49,10 +49,7 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
 export const addRule = (
   writeFn: Function | TrackedFunction,
   readFn: Function | TrackedFunction,
-  skip?: (
-    writeParamsObj: any,
-    readParamsObj?: any
-  ) => boolean | undefined
+  skip?: (writeParamsObj: any, readParamsObj?: any) => boolean | undefined
 ) => {
   const writeKey = trackFun(writeFn);
   const readKey = trackFun(readFn);
@@ -66,7 +63,7 @@ export const addRule = (
   };
   readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
   readKey2writeKey[readKey].push(writeKey);
-  console.info('readKey2writeKey["'+readKey+'"]');
+  console.info('readKey2writeKey["' + readKey + '"]');
 };
 
 export const loadRules = (depList: Function[][]) => {};
@@ -112,7 +109,13 @@ export const triggerAction = (
           Object.keys(actionRule.readersInstancesMap).forEach(
             (instanceKey: string) => {
               const readersInst = actionRule.readersInstancesMap[instanceKey];
-              if (readersInst?.readTrigger && !(actionRule.skip && actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
+              if (
+                readersInst?.readTrigger &&
+                !(
+                  actionRule.skip &&
+                  actionRule.skip(writeParamsObj, readersInst.paramsObj)
+                )
+              ) {
                 readersInst.readTrigger();
               }
             }
@@ -149,20 +152,24 @@ export const useLiveQuery = (
   return data;
 };
 
-type FunMap = {[fName: string]: Function | TrackedFunction};
-type TrackedFunMap = {[fName: string]: TrackedFunction};
+type FunMap = { [fName: string]: Function | TrackedFunction };
+type TrackedFunMap = { [fName: string]: TrackedFunction };
 
-
-export const asRead: (kFn: FunMap) => TrackedFunMap  = (kFn: FunMap) => {
-  return Object.keys(kFn).reduce((ret: FunMap, k: string): FunMap => 
-    ({[k] : (
-      readParamsObj: ParamsType
-    ) => useLiveQuery(kFn[k], readParamsObj)}), {});
-}
+export const asRead: (kFn: FunMap) => TrackedFunMap = (kFn: FunMap) => {
+  return Object.keys(kFn).reduce(
+    (ret: FunMap, k: string): FunMap => ({
+      [k]: (readParamsObj: ParamsType) => useLiveQuery(kFn[k], readParamsObj),
+    }),
+    {}
+  );
+};
 
 export const asWrite: (kFn: FunMap) => TrackedFunMap = (kFn: FunMap) => {
-  return Object.keys(kFn).reduce((ret: FunMap, k: string): FunMap => 
-    ({[k] : (
-      writeParamsObj: ParamsType
-    ) => triggerAction(kFn[k], writeParamsObj)}), {});
-}
+  return Object.keys(kFn).reduce(
+    (ret: FunMap, k: string): FunMap => ({
+      [k]: (writeParamsObj: ParamsType) =>
+        triggerAction(kFn[k], writeParamsObj),
+    }),
+    {}
+  );
+};

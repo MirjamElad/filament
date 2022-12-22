@@ -9,7 +9,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLiveQuery = exports.triggerAction = exports.registerReadInstance = exports.loadRules = exports.addRule = void 0;
+exports.asWrite = exports.asRead = exports.useLiveQuery = exports.triggerAction = exports.registerReadInstance = exports.loadRules = exports.addRule = void 0;
 var react_1 = require("react");
 var fun_ID_Cpt = 1;
 var CMP_ID_Cpt = 1;
@@ -29,6 +29,7 @@ var addRule = function (writeFn, readFn, skip) {
     var _a;
     var writeKey = trackFun(writeFn);
     var readKey = trackFun(readFn);
+    console.info("'addRule(".concat(writeKey, ", ").concat(writeKey, ")'"));
     actionRules[writeKey] = actionRules[writeKey] || {};
     actionRules[writeKey] = (_a = {},
         _a[readKey] = {
@@ -38,6 +39,7 @@ var addRule = function (writeFn, readFn, skip) {
         _a);
     readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
     readKey2writeKey[readKey].push(writeKey);
+    console.info('readKey2writeKey["' + readKey + '"]');
 };
 exports.addRule = addRule;
 var loadRules = function (depList) { };
@@ -108,4 +110,24 @@ var useLiveQuery = function (readFn, paramsObj) {
     return data;
 };
 exports.useLiveQuery = useLiveQuery;
+var asRead = function (kFn) {
+    return Object.keys(kFn).reduce(function (ret, k) {
+        var _a;
+        return (_a = {},
+            _a[k] = function (readParamsObj) { return (0, exports.useLiveQuery)(kFn[k], readParamsObj); },
+            _a);
+    }, {});
+};
+exports.asRead = asRead;
+var asWrite = function (kFn) {
+    return Object.keys(kFn).reduce(function (ret, k) {
+        var _a;
+        return (_a = {},
+            _a[k] = function (writeParamsObj) {
+                return (0, exports.triggerAction)(kFn[k], writeParamsObj);
+            },
+            _a);
+    }, {});
+};
+exports.asWrite = asWrite;
 //# sourceMappingURL=index.js.map
