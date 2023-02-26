@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 
-export interface TrackedFunction extends Function {
+interface TrackedFunction extends Function {
   uid?: number;
 }
 
-export type ParamsType = {
+type ParamsType = {
   [key: string]: any;
 };
 
@@ -26,7 +26,7 @@ type ActionRules = {
   };
 };
 
-let fun_ID_Cpt = 1;
+let fun_ID_Cpt = 0;
 let CMP_ID_Cpt = 1;
 const actionRules: ActionRules = {};
 const readKey2writeKey: { [readKey: number]: number[] } = {};
@@ -49,11 +49,13 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
 export const addRule = (
   writeFn: Function | TrackedFunction,
   readFn: Function | TrackedFunction,
-  skip?: (writeParamsObj: any, readParamsObj?: any) => boolean | undefined
+  skip?: (
+    writeParamsObj: any,
+    readParamsObj?: any
+  ) => boolean | undefined
 ) => {
   const writeKey = trackFun(writeFn);
   const readKey = trackFun(readFn);
-  console.info(`'addRule(${writeKey}, ${writeKey})'`);
   actionRules[writeKey] = actionRules[writeKey] || {};
   actionRules[writeKey] = {
     [readKey]: {
@@ -63,17 +65,14 @@ export const addRule = (
   };
   readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
   readKey2writeKey[readKey].push(writeKey);
-  console.info('readKey2writeKey["' + readKey + '"]');
 };
 
-export const loadRules = (depList: Function[][]) => {};
-
-export const registerReadInstance = (
+const registerReadInstance = (
   readKey: number,
   readerInstance: ReaderInstance
 ) => {
   if (readKey <= 0) {
-    console.log(`useLiveQuery run on an untracked Function`);
+    console.log(`useSync run on an untracked Function`);
     return;
   }
   const writeKeysList = readKey2writeKey[readKey] || [];
@@ -91,13 +90,14 @@ export const registerReadInstance = (
     }
   });
 };
-export const triggerAction = (
+
+export const trigger = (
   writeFn: TrackedFunction,
   writeParamsObj: ParamsType
 ) => {
   writeFn(writeParamsObj);
   if (writeFn?.uid && writeFn.uid <= 0) {
-    console.warn(`triggerAction run on an untracked Function`);
+    console.warn(`trigger run on an untracked Function writeFn?.uid:${writeFn?.uid} `);
     return;
   }
   if (writeFn.uid && actionRules[writeFn.uid]) {
@@ -109,13 +109,7 @@ export const triggerAction = (
           Object.keys(actionRule.readersInstancesMap).forEach(
             (instanceKey: string) => {
               const readersInst = actionRule.readersInstancesMap[instanceKey];
-              if (
-                readersInst?.readTrigger &&
-                !(
-                  actionRule.skip &&
-                  actionRule.skip(writeParamsObj, readersInst.paramsObj)
-                )
-              ) {
+              if (readersInst?.readTrigger && !(actionRule.skip && actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
                 readersInst.readTrigger();
               }
             }
@@ -125,7 +119,8 @@ export const triggerAction = (
     }
   }
 };
-export const useLiveQuery = (
+
+export const useSync = (
   readFn: Function | TrackedFunction,
   paramsObj: ParamsType
 ) => {
@@ -138,38 +133,17 @@ export const useLiveQuery = (
       readTrigger: () => setResultVersion((x) => x + 1),
       paramsObj,
     });
-    return () =>
+    return () => {
       registerReadInstance((readFn as TrackedFunction).uid || -1, {
         instanceKey: key.current,
         readTrigger: undefined,
         paramsObj,
       });
+    }
   }, [(readFn as TrackedFunction).uid, ...paramsArr]);
   const data = useMemo(
     () => (readFn as TrackedFunction)(paramsObj),
     [resultVersion, ...paramsArr]
   );
   return data;
-};
-
-type FunMap = { [fName: string]: Function | TrackedFunction };
-type TrackedFunMap = { [fName: string]: TrackedFunction };
-
-export const asRead: (kFn: FunMap) => TrackedFunMap = (kFn: FunMap) => {
-  return Object.keys(kFn).reduce(
-    (ret: FunMap, k: string): FunMap => ({
-      [k]: (readParamsObj: ParamsType) => useLiveQuery(kFn[k], readParamsObj),
-    }),
-    {}
-  );
-};
-
-export const asWrite: (kFn: FunMap) => TrackedFunMap = (kFn: FunMap) => {
-  return Object.keys(kFn).reduce(
-    (ret: FunMap, k: string): FunMap => ({
-      [k]: (writeParamsObj: ParamsType) =>
-        triggerAction(kFn[k], writeParamsObj),
-    }),
-    {}
-  );
 };
