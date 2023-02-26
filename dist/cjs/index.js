@@ -9,9 +9,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.asWrite = exports.asRead = exports.useLiveQuery = exports.triggerAction = exports.registerReadInstance = exports.loadRules = exports.addRule = void 0;
+exports.useSync = exports.trigger = exports.addRule = void 0;
 var react_1 = require("react");
-var fun_ID_Cpt = 1;
+var fun_ID_Cpt = 0;
 var CMP_ID_Cpt = 1;
 var actionRules = {};
 var readKey2writeKey = {};
@@ -29,7 +29,6 @@ var addRule = function (writeFn, readFn, skip) {
     var _a;
     var writeKey = trackFun(writeFn);
     var readKey = trackFun(readFn);
-    console.info("'addRule(".concat(writeKey, ", ").concat(writeKey, ")'"));
     actionRules[writeKey] = actionRules[writeKey] || {};
     actionRules[writeKey] = (_a = {},
         _a[readKey] = {
@@ -39,14 +38,11 @@ var addRule = function (writeFn, readFn, skip) {
         _a);
     readKey2writeKey[readKey] = readKey2writeKey[readKey] || [];
     readKey2writeKey[readKey].push(writeKey);
-    console.info('readKey2writeKey["' + readKey + '"]');
 };
 exports.addRule = addRule;
-var loadRules = function (depList) { };
-exports.loadRules = loadRules;
 var registerReadInstance = function (readKey, readerInstance) {
     if (readKey <= 0) {
-        console.log("useLiveQuery run on an untracked Function");
+        console.log("useSync run on an untracked Function");
         return;
     }
     var writeKeysList = readKey2writeKey[readKey] || [];
@@ -61,11 +57,10 @@ var registerReadInstance = function (readKey, readerInstance) {
         }
     });
 };
-exports.registerReadInstance = registerReadInstance;
-var triggerAction = function (writeFn, writeParamsObj) {
+var trigger = function (writeFn, writeParamsObj) {
     writeFn(writeParamsObj);
     if ((writeFn === null || writeFn === void 0 ? void 0 : writeFn.uid) && writeFn.uid <= 0) {
-        console.warn("triggerAction run on an untracked Function");
+        console.warn("trigger run on an untracked Function writeFn?.uid:".concat(writeFn === null || writeFn === void 0 ? void 0 : writeFn.uid, " "));
         return;
     }
     if (writeFn.uid && actionRules[writeFn.uid]) {
@@ -87,19 +82,19 @@ var triggerAction = function (writeFn, writeParamsObj) {
         }
     }
 };
-exports.triggerAction = triggerAction;
-var useLiveQuery = function (readFn, paramsObj) {
+exports.trigger = trigger;
+var useSync = function (readFn, paramsObj) {
     var _a = (0, react_1.useState)(0), resultVersion = _a[0], setResultVersion = _a[1];
     var key = (0, react_1.useRef)("".concat(++CMP_ID_Cpt));
     var paramsArr = Object.keys(paramsObj).map(function (k) { return paramsObj[k]; });
     (0, react_1.useEffect)(function () {
-        (0, exports.registerReadInstance)(readFn.uid || -1, {
+        registerReadInstance(readFn.uid || -1, {
             instanceKey: key.current,
             readTrigger: function () { return setResultVersion(function (x) { return x + 1; }); },
             paramsObj: paramsObj,
         });
         return function () {
-            return (0, exports.registerReadInstance)(readFn.uid || -1, {
+            registerReadInstance(readFn.uid || -1, {
                 instanceKey: key.current,
                 readTrigger: undefined,
                 paramsObj: paramsObj,
@@ -109,25 +104,5 @@ var useLiveQuery = function (readFn, paramsObj) {
     var data = (0, react_1.useMemo)(function () { return readFn(paramsObj); }, __spreadArray([resultVersion], paramsArr, true));
     return data;
 };
-exports.useLiveQuery = useLiveQuery;
-var asRead = function (kFn) {
-    return Object.keys(kFn).reduce(function (ret, k) {
-        var _a;
-        return (_a = {},
-            _a[k] = function (readParamsObj) { return (0, exports.useLiveQuery)(kFn[k], readParamsObj); },
-            _a);
-    }, {});
-};
-exports.asRead = asRead;
-var asWrite = function (kFn) {
-    return Object.keys(kFn).reduce(function (ret, k) {
-        var _a;
-        return (_a = {},
-            _a[k] = function (writeParamsObj) {
-                return (0, exports.triggerAction)(kFn[k], writeParamsObj);
-            },
-            _a);
-    }, {});
-};
-exports.asWrite = asWrite;
+exports.useSync = useSync;
 //# sourceMappingURL=index.js.map

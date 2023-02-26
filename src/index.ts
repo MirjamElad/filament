@@ -49,10 +49,7 @@ const trackFun: (fn: Function | TrackedFunction) => number = (
 export const addRule = (
   writeFn: Function | TrackedFunction,
   readFn: Function | TrackedFunction,
-  skip?: (
-    writeParamsObj: any,
-    readParamsObj?: any
-  ) => boolean | undefined
+  skip?: (writeParamsObj: any, readParamsObj?: any) => boolean | undefined
 ) => {
   const writeKey = trackFun(writeFn);
   const readKey = trackFun(readFn);
@@ -97,7 +94,9 @@ export const trigger = (
 ) => {
   writeFn(writeParamsObj);
   if (writeFn?.uid && writeFn.uid <= 0) {
-    console.warn(`trigger run on an untracked Function writeFn?.uid:${writeFn?.uid} `);
+    console.warn(
+      `trigger run on an untracked Function writeFn?.uid:${writeFn?.uid} `
+    );
     return;
   }
   if (writeFn.uid && actionRules[writeFn.uid]) {
@@ -109,7 +108,13 @@ export const trigger = (
           Object.keys(actionRule.readersInstancesMap).forEach(
             (instanceKey: string) => {
               const readersInst = actionRule.readersInstancesMap[instanceKey];
-              if (readersInst?.readTrigger && !(actionRule.skip && actionRule.skip(writeParamsObj, readersInst.paramsObj))) {
+              if (
+                readersInst?.readTrigger &&
+                !(
+                  actionRule.skip &&
+                  actionRule.skip(writeParamsObj, readersInst.paramsObj)
+                )
+              ) {
                 readersInst.readTrigger();
               }
             }
@@ -139,7 +144,7 @@ export const useSync = (
         readTrigger: undefined,
         paramsObj,
       });
-    }
+    };
   }, [(readFn as TrackedFunction).uid, ...paramsArr]);
   const data = useMemo(
     () => (readFn as TrackedFunction)(paramsObj),
