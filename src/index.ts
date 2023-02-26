@@ -152,3 +152,9 @@ export const useSync = (
   );
   return data;
 };
+
+//TODO: (From memory) below list of actions to finally publish a new version of a lib to npm
+// 1- increment the lib version.
+// 2- yarn build
+// 3- git commit
+// 3- npm publish

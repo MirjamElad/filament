@@ -105,4 +105,9 @@ var useSync = function (readFn, paramsObj) {
     return data;
 };
 exports.useSync = useSync;
+//TODO: (From memory) below list of actions to finally publish a new version of a lib to npm
+// 1- increment the lib version.
+// 2- yarn build
+// 3- git commit
+// 3- npm publish
 //# sourceMappingURL=index.js.map
